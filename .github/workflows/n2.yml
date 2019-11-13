@@ -1,0 +1,63 @@
+name: Terraform CI/CD
+on: [push]
+
+jobs:
+
+   build:
+
+     runs-on: ubuntu-latest
+
+     steps:
+     # Checkout
+     - uses: actions/checkout@v1
+
+     # Update
+     - name: Install terraform
+       working-directory: /tmp
+       run: |
+          terraform --version
+          whereis terraform
+          sudo rm -rf /usr/local/bin/terraform
+          sudo wget --quiet https://releases.hashicorp.com/terraform/0.12.12/terraform_0.12.12_linux_amd64.zip 
+          sudo unzip terraform_0.12.12_linux_amd64.zip
+          sudo mv terraform /usr/local/bin
+          sudo rm terraform_0.12.12_linux_amd64.zip
+          terraform --version
+          
+     - name: Clone repository
+       working-directory: /opt
+       env:
+         AWS_ACCESS_KEY_ID: ${{AKIAQ6OOLGGB44QEVQJP}}
+         AWS_SECRET_ACCESS_KEY: ${{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}}
+       run: |
+         git clone https://github.com/PrasadTelasula/LearnDocker.git
+         ls -la /opt/LearnDocker
+         
+     - name: Terraform Initialize
+       working-directory: /opt/LearnDocker/swarm/
+       env:
+         AWS_ACCESS_KEY_ID: ${{AKIAQ6OOLGGB44QEVQJP}}
+         AWS_SECRET_ACCESS_KEY: ${{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}}
+       run: terraform init
+
+     - name: Terraform Validate
+       working-directory: /opt/LearnDocker/swarm/
+       env:
+         AWS_ACCESS_KEY_ID: ${{AKIAQ6OOLGGB44QEVQJ}}
+         AWS_SECRET_ACCESS_KEY: ${{ng/gy7+2PdXHegZic5z730DZAo9ZkDlYAYya+pC1}}
+       run: terraform validate
+
+     - name: Terraform plan
+       working-directory: /opt/LearnDocker/swarm/
+       env:
+         AWS_ACCESS_KEY_ID: ${{AKIAQ6OOLGGB44QEVQJ}}
+         AWS_SECRET_ACCESS_KEY: ${{ng/gy7+2PdXHegZic5z730DZAo9ZkDlYAYya+pC1}}
+       run: terraform plan
+
+
+     - name: Terraform Apply
+       working-directory: /opt/LearnDocker/swarm/
+       env:
+         AWS_ACCESS_KEY_ID: ${{AKIAQ6OOLGGB44QEVQJ}}
+         AWS_SECRET_ACCESS_KEY: ${{ng/gy7+2PdXHegZic5z730DZAo9ZkDlYAYya+pC1}}
+       run: terraform apply -auto-approve
